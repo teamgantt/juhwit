@@ -1,0 +1,32 @@
+{
+    "name": "teamgantt/juhwit",
+    "description": "Verify JWTs from AWS Cognito",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Brian Scaturro",
+            "email": "scaturrob@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "TeamGantt\\Juhwit\\": ["src/"]
+        }
+    },
+    "require": {
+        "firebase/php-jwt": "^5.0",
+        "codercat/jwk-to-pem": "^0.0.3",
+        "php": "^7.3"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "TeamGantt\\Juhwit\\JwtProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "kahlan/kahlan": "^4.7"
+    }
+}
