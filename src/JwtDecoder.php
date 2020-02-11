@@ -45,8 +45,9 @@ class JwtDecoder implements DecoderInterface
      */
     public function decode(string $token, string $keyPath): Token
     {
-        [0 => $header] = $this->validateStructure($token);
-        ['kid' => $kid] = json_decode($header, true);
+        list($header) = $this->validateStructure($token);
+        $headerData = json_decode($header, true);
+        $kid = $headerData['kid'];
 
         $claims = $this->getVerifiedToken($kid, $keyPath, $token);
 
@@ -61,7 +62,7 @@ class JwtDecoder implements DecoderInterface
      *
      * @return null|array
      */
-    private function getKey(string $keyId, string $jwkFile): ?array
+    private function getKey(string $keyId, string $jwkFile)
     {
         if (!file_exists($jwkFile)) {
             throw new \RuntimeException("JWK file $jwkFile not found");
