@@ -23,6 +23,9 @@ class JwtProvider extends ServiceProvider
             return new CognitoClaimVerifier($clientId, $poolId, $region);
         });
 
-        $this->app->bind(DecoderInterface::class, JwtDecoder::class);
+        $this->app->bind(DecoderInterface::class, function ($app) {
+            $verifier = $app->make(ClaimVerifierInterface::class);
+            return new JwtDecoder($verifier, config('cognito.extraRequiredClaims', []));
+        });
     }
 }

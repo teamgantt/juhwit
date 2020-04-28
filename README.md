@@ -29,6 +29,26 @@ $pathToJwk = '/some/path/to/jwk.json';
 $token = $decoder->decode($someTokenFromARequest, $pathToJwk);
 ```
 
+### Requiring extra claims
+
+A token is required to have the following claims:
+
+* aud
+* iss
+* token_use
+* email
+
+If you want to require extra claims, such as `custom:foo` or `custom:user`, you can require those by providing a second argument
+to the `JwtDecoder` instance.
+
+```php
+<?php
+
+use TeamGantt\Juhwit\JwtDecoder;
+
+$decoder = new JwtDecoder($verifier, ['custom:user', 'custom:foo']);
+```
+
 ### Laravel Provider
 
 A `JwtProvider` is included for ease of use in Laravel/Lumen. 
@@ -39,13 +59,18 @@ The following environment variables are required to ensure the `CognitoClaimVeri
 * `COGNITO_POOL_ID`
 * `COGNITO_REGION`
 
-### Note
+To provide extra claims, create a config file in your laravel or lumen app called `cognito.php` and provide an `extraRequiredClaims` key
 
-We are fairly opinionated on the structure of the JWT for now. See the `invariant()` method of the `Token` model.
+```php
+// config/cognito.php
+<?php
 
-Future versions may relax things a bit.
+return [
+    'extraRequiredClaims' => ['custom:user', 'custom:foo']
+];
+```
 
-We currently rely on a `custom:user_id` attribute being present in the token. This attribute should be configured as a read only attribute in the Cognito user pool.
+If this config is not provided, only the default claims will be required.
 
 ## Running Tests
 
