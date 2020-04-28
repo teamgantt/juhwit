@@ -42,16 +42,6 @@ class Token
     }
 
     /**
-     * Get the user id associated with this token.
-     *
-     * @return int
-     */
-    public function getUserId(): int
-    {
-        return (int) ($this->getClaim('custom:user_id'));
-    }
-
-    /**
      * Validate the claims the Token was constructed with. This is a semi opinionated
      * list of required keys for a JWT from Cognito.
      *
