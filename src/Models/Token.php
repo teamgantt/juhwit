@@ -4,6 +4,13 @@ namespace TeamGantt\Juhwit\Models;
 
 class Token
 {
+    const BASE_REQUIRED_CLAIMS = [
+        'aud',
+        'iss',
+        'token_use',
+        'email',
+    ];
+
     /**
      * @var array
      */
@@ -14,9 +21,9 @@ class Token
      *
      * @param array $claims
      */
-    public function __construct(array $claims)
+    public function __construct(array $claims, $extraRequiredClaims = [])
     {
-        $this->invariant($claims);
+        $this->invariant($claims, $extraRequiredClaims);
         $this->claims = $claims;
     }
 
@@ -46,24 +53,18 @@ class Token
 
     /**
      * Validate the claims the Token was constructed with. This is a semi opinionated
-     * list of required keys for a JWT from Cognito - including a single custom attribute.
-     * Future versions may relax this requirement
+     * list of required keys for a JWT from Cognito.
      *
      * @param array $claims
+     * @param array<string> $claims
      *
      * @throws \DomainException
      *
      * @return void
      */
-    private function invariant(array $claims)
+    private function invariant(array $claims, array $extraRequiredClaims)
     {
-        $requiredKeys = [
-            'aud',
-            'iss',
-            'token_use',
-            'email',
-            'custom:user_id',
-        ];
+        $requiredKeys = array_merge(self::BASE_REQUIRED_CLAIMS, $extraRequiredClaims);
 
         foreach ($requiredKeys as $requiredKey) {
             if (!isset($claims[$requiredKey])) {
