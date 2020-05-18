@@ -2,6 +2,8 @@
 
 namespace TeamGantt\Juhwit\Models;
 
+use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
+
 class Token
 {
     const BASE_REQUIRED_CLAIMS = [
@@ -48,7 +50,7 @@ class Token
      * @param array $claims
      * @param array<string> $claims
      *
-     * @throws \DomainException
+     * @throws InvalidClaimsException
      *
      * @return void
      */
@@ -58,7 +60,7 @@ class Token
 
         foreach ($requiredKeys as $requiredKey) {
             if (!isset($claims[$requiredKey])) {
-                throw new \DomainException("claim $requiredKey not found");
+                throw new InvalidClaimsException("claim $requiredKey not found");
             }
         }
     }
