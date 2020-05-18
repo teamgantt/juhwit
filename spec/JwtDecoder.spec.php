@@ -4,6 +4,7 @@ use TeamGantt\Juhwit\Exceptions\ExpiredException;
 use Firebase\JWT\JWT;
 use Kahlan\Plugin\Double;
 use TeamGantt\Juhwit\Contracts\ClaimVerifierInterface;
+use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
 use TeamGantt\Juhwit\Exceptions\InvalidJwkException;
 use TeamGantt\Juhwit\Exceptions\InvalidStructureException;
 use TeamGantt\Juhwit\JwtDecoder;
@@ -54,7 +55,7 @@ describe('JwtDecoder', function () {
             $sut = function () use ($decoderWithExtraRequiredKey) {
                 $decoderWithExtraRequiredKey->decode($this->jwt, $this->validJwk);
             };
-            expect($sut)->toThrow(new DomainException("claim custom:foo not found"));
+            expect($sut)->toThrow(new InvalidClaimsException("claim custom:foo not found"));
         });
 
         it('should throw an exception for expired tokens', function () {
