@@ -148,7 +148,7 @@ class JwtDecoder implements DecoderInterface
         $i = 0;
         foreach ($decoded as $part) {
             $i++;
-            if ($part === false) {
+            if (empty($part)) {
                 throw new InvalidStructureException("Token part $i not Base64url encoded");
             }
         }
