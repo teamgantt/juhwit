@@ -44,6 +44,14 @@ describe('JwtDecoder', function () {
             expect($sut)->toThrow(new InvalidStructureException());
         });
 
+        it('should reject an empty structure', function () {
+            $sut = function () {
+                $invalid = '..';
+                $this->decoder->decode($invalid, $this->validJwk);
+            };
+            expect($sut)->toThrow(new InvalidStructureException());
+        });
+
         it('should decode a valid jwt', function () {
             $token = $this->decoder->decode($this->jwt, $this->validJwk);
             expect($token->getClaim('custom:user_id'))->toBe('123');
