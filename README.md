@@ -53,24 +53,21 @@ $decoder = new JwtDecoder($verifier, ['custom:user', 'custom:foo']);
 
 A `JwtProvider` is included for ease of use in Laravel/Lumen. 
 
-The following environment variables are required to ensure the `CognitoClaimVerifier` is constructed properly:
-
-* `COGNITO_CLIENT_ID`
-* `COGNITO_POOL_ID`
-* `COGNITO_REGION`
-
-To provide extra claims, create a config file in your laravel or lumen app called `cognito.php` and provide an `extraRequiredClaims` key
+To provide required configuration, and the optional extra claims, create a config file in your laravel or lumen app called `cognito.php` and provide the supported keys.
 
 ```php
 // config/cognito.php
 <?php
 
 return [
+    'clientIds' => ['us-east2_abcde'],
+    'poolId' => 'abcdefghijk',
+    'region' => 'us-east-2',
     'extraRequiredClaims' => ['custom:user', 'custom:foo']
 ];
 ```
 
-If this config is not provided, only the default claims will be required.
+The config file is required.
 
 ## Running Tests
 
