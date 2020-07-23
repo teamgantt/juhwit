@@ -9,9 +9,9 @@ use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
 class CognitoClaimVerifier implements ClaimVerifierInterface
 {
     /**
-     * @var string
+     * @var string[]
      */
-    protected $clientId;
+    protected $clientIds;
 
     /**
      * @var string
@@ -26,13 +26,13 @@ class CognitoClaimVerifier implements ClaimVerifierInterface
     /**
      * CognitoClaimVerifier constructor.
      *
-     * @param string $clientId
+     * @param string[] $clientId
      * @param string $poolId
      * @param string $region
      */
-    public function __construct(string $clientId, string $poolId, string $region)
+    public function __construct(array $clientIds, string $poolId, string $region)
     {
-        $this->clientId = $clientId;
+        $this->clientIds = $clientIds;
         $this->poolId = $poolId;
         $this->region = $region;
     }
@@ -52,7 +52,7 @@ class CognitoClaimVerifier implements ClaimVerifierInterface
         $iss = $token->getClaim('iss');
         $tokenUse = $token->getClaim('token_use');
 
-        if ($aud !== $this->clientId) {
+        if (array_search($aud, $this->clientIds) === false) {
             throw new InvalidClaimsException('Invalid aud claim');
         }
 

@@ -6,17 +6,17 @@ use TeamGantt\Juhwit\CognitoClaimVerifier;
 
 describe('CognitoClaimVerifier', function () {
     beforeEach(function () {
-        $this->clientId = 'client';
+        $this->clientIds = ['client'];
         $this->poolId = 'pool';
         $this->region = 'us-east-2';
         $this->claims = [
-            'aud' => $this->clientId,
+            'aud' => $this->clientIds[0],
             'iss' => 'https://cognito-idp.us-east-2.amazonaws.com/pool',
             'token_use' => 'id',
             'email' => 'brian@internet.com',
             'custom:user_id' => 123
         ];
-        $this->verifier = new CognitoClaimVerifier($this->clientId, $this->poolId, $this->region);
+        $this->verifier = new CognitoClaimVerifier($this->clientIds, $this->poolId, $this->region);
     });
 
     describe('->verify()', function () {
@@ -40,7 +40,7 @@ describe('CognitoClaimVerifier', function () {
         });
 
         it('should throw an exception if the iss claim does not match the pool id', function () {
-            $verifier = new CognitoClaimVerifier($this->clientId, 'ham', $this->region);
+            $verifier = new CognitoClaimVerifier($this->clientIds, 'ham', $this->region);
             $token = new Token($this->claims);
 
             $sut = function () use ($verifier, $token) {
@@ -51,7 +51,7 @@ describe('CognitoClaimVerifier', function () {
         });
 
         it('should throw an exception if the iss claim does not match the region', function () {
-            $verifier = new CognitoClaimVerifier($this->clientId, $this->poolId, 'ham');
+            $verifier = new CognitoClaimVerifier($this->clientIds, $this->poolId, 'ham');
             $token = new Token($this->claims);
 
             $sut = function () use ($verifier, $token) {
