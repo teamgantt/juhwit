@@ -16,11 +16,11 @@ class JwtProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(ClaimVerifierInterface::class, function () {
-            $clientId = env('COGNITO_CLIENT_ID');
-            $poolId = env('COGNITO_POOL_ID');
-            $region = env('COGNITO_REGION');
+            $clientIds = config('cognito.clientIds', []);
+            $poolId = config('cognito.poolId');
+            $region = config('cognito.region');
 
-            return new CognitoClaimVerifier($clientId, $poolId, $region);
+            return new CognitoClaimVerifier($clientIds, $poolId, $region);
         });
 
         $this->app->bind(DecoderInterface::class, function ($app) {
