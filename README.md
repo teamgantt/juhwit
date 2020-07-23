@@ -15,11 +15,11 @@ use TeamGantt\Juhwit\JwtDecoder;
 use TeamGantt\Juhwit\CognitoClaimVerifier;
 
 // Create a CognitoClaimVerifier with information about the AWS user pool
-$clientId = 'some client id from cognito';
+$clientIds = ['some client id from cognito'];
 $poolId = 'some pool id from cognito';
 $region = 'us-east-2';
 
-$verifier = new CognitoClaimVerifier($clientId, $poolId, $region);
+$verifier = new CognitoClaimVerifier($clientIds, $poolId, $region);
 $decoder = new JwtDecoder($verifier);
 
 // we need some public keys in the form of a jwk (accessible via cognito)
