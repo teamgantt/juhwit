@@ -49,26 +49,6 @@ use TeamGantt\Juhwit\JwtDecoder;
 $decoder = new JwtDecoder($verifier, ['custom:user', 'custom:foo']);
 ```
 
-### Laravel Provider
-
-A `JwtProvider` is included for ease of use in Laravel/Lumen. 
-
-To provide required configuration, and the optional extra claims, create a config file in your laravel or lumen app called `cognito.php` and provide the supported keys.
-
-```php
-// config/cognito.php
-<?php
-
-return [
-    'clientIds' => ['us-east2_abcde'],
-    'poolId' => 'abcdefghijk',
-    'region' => 'us-east-2',
-    'extraRequiredClaims' => ['custom:user', 'custom:foo']
-];
-```
-
-The config file is required.
-
 ## Running Tests
 
 ```

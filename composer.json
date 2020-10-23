@@ -22,13 +22,6 @@
         "codercat/jwk-to-pem": "^0.0.3",
         "php": "^7.0"
     },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "TeamGantt\\Juhwit\\JwtProvider"
-            ]
-        }
-    },
     "require-dev": {
         "kahlan/kahlan": "^4.7"
     }
