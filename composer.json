@@ -9,6 +9,9 @@
             "email": "scaturrob@gmail.com"
         }
     ],
+    "scripts": {
+        "test": "kahlan"
+    },
     "autoload": {
         "psr-4": {
             "TeamGantt\\Juhwit\\": ["src/"]
