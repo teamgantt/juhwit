@@ -44,19 +44,18 @@ class JwtDecoder implements DecoderInterface
      * {@inheritdoc}
      *
      * @param string $token
-     * @param string $jwkFile
      *
      * @throws TeamGantt\Api\Exceptions\Token\InvalidClaimsException
      *
      * @return array
      */
-    public function decode(string $token, string $keyPath): Token
+    public function decode(string $token): Token
     {
         list($header) = $this->validateStructure($token);
         $headerData = json_decode($header, true);
         $kid = $headerData['kid'];
 
-        $claims = $this->getVerifiedToken($kid, $keyPath, $token);
+        $claims = $this->getVerifiedToken($kid, $token);
 
         return $this->verifier->verify(new Token($claims, $this->extraRequiredClaims));
     }
@@ -69,15 +68,11 @@ class JwtDecoder implements DecoderInterface
      *
      * @return null|array
      */
-    private function getKey(string $keyId, string $jwkFile)
+    private function getKey(string $keyId)
     {
-        if (!file_exists($jwkFile)) {
-            throw new \RuntimeException("JWK file $jwkFile not found");
-        }
-
         // Get the key that was used to sign the token
-        $jwks = json_decode(file_get_contents($jwkFile), true);
-        $keys = $jwks['keys'];
+        $jwk = $this->verifier->getUserPool()->getJwk();
+        $keys = $jwk['keys'] ?? [];
 
         return array_reduce($keys, function ($signingKey, $current) use ($keyId) {
             if ($current['kid'] === $keyId) {
@@ -99,9 +94,9 @@ class JwtDecoder implements DecoderInterface
      *
      * @return array
      */
-    private function getVerifiedToken(string $keyId, string $jwkFile, string $token): array
+    private function getVerifiedToken(string $keyId, string $token): array
     {
-        $key = $this->getKey($keyId, $jwkFile);
+        $key = $this->getKey($keyId);
 
         if (empty($key)) {
             throw new InvalidJwkException("Could not locate key with ID $keyId");

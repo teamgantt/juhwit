@@ -1,6 +1,7 @@
 <?php
 
 use TeamGantt\Juhwit\Models\Token;
+use TeamGantt\Juhwit\Models\UserPool;
 use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
 use TeamGantt\Juhwit\CognitoClaimVerifier;
 
@@ -16,7 +17,10 @@ describe('CognitoClaimVerifier', function () {
             'email' => 'brian@internet.com',
             'custom:user_id' => 123
         ];
-        $this->verifier = new CognitoClaimVerifier($this->clientIds, $this->poolId, $this->region);
+
+        $pool = new UserPool($this->poolId, $this->clientIds, $this->region, []);
+
+        $this->verifier = new CognitoClaimVerifier($pool);
     });
 
     describe('->verify()', function () {
@@ -40,7 +44,8 @@ describe('CognitoClaimVerifier', function () {
         });
 
         it('should throw an exception if the iss claim does not match the pool id', function () {
-            $verifier = new CognitoClaimVerifier($this->clientIds, 'ham', $this->region);
+            $pool = new UserPool('ham', $this->clientIds, $this->region, []);
+            $verifier = new CognitoClaimVerifier($pool);
             $token = new Token($this->claims);
 
             $sut = function () use ($verifier, $token) {
@@ -51,7 +56,8 @@ describe('CognitoClaimVerifier', function () {
         });
 
         it('should throw an exception if the iss claim does not match the region', function () {
-            $verifier = new CognitoClaimVerifier($this->clientIds, $this->poolId, 'ham');
+            $pool = new UserPool($this->poolId, $this->clientIds, 'ham', []);
+            $verifier = new CognitoClaimVerifier($pool);
             $token = new Token($this->claims);
 
             $sut = function () use ($verifier, $token) {

@@ -12,21 +12,23 @@ The main service provided by Juhwit is the `JwtDecoder` which is composed with t
 <?php
 
 use TeamGantt\Juhwit\JwtDecoder;
+use TeamGantt\Juhwit\Models\UserPool;
 use TeamGantt\Juhwit\CognitoClaimVerifier;
 
-// Create a CognitoClaimVerifier with information about the AWS user pool
-$clientIds = ['some client id from cognito'];
+// Create a UserPool to pass to the CognitoClaimVerifier
 $poolId = 'some pool id from cognito';
+$clientIds = ['some client id from cognito'];
 $region = 'us-east-2';
 
-$verifier = new CognitoClaimVerifier($clientIds, $poolId, $region);
+// we need some public keys in the form of a jwk (accessible via cognito)
+$jwk = json_decode(file_get_contents('path/to/jwk.json'), true);
+
+$pool = new UserPool($poolId, $clientIds, $region, $jwk);
+$verifier = new CognitoClaimVerifier($pool);
 $decoder = new JwtDecoder($verifier);
 
-// we need some public keys in the form of a jwk (accessible via cognito)
-$pathToJwk = '/some/path/to/jwk.json';
-
 // If all is valid we will get a token back - otherwise a TokenException is thrown
-$token = $decoder->decode($someTokenFromARequest, $pathToJwk);
+$token = $decoder->decode($someTokenFromARequest);
 ```
 
 ### Requiring extra claims

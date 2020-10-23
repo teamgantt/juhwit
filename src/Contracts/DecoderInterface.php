@@ -16,5 +16,5 @@ interface DecoderInterface
      *
      * @return Token
      */
-    public function decode(string $token, string $jwkFile): Token;
+    public function decode(string $token): Token;
 }
