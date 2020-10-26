@@ -2,8 +2,8 @@
 
 namespace TeamGantt\Juhwit\Contracts;
 
-// use TeamGantt\Api\Exceptions\Token\InvalidClaimsException;
 use TeamGantt\Juhwit\Models\Token;
+use TeamGantt\Juhwit\Models\UserPool;
 
 interface ClaimVerifierInterface
 {
@@ -17,4 +17,11 @@ interface ClaimVerifierInterface
      * @return Token
      */
     public function verify(Token $token): Token;
+
+    /**
+     * Get the user pool that tokens are verified against
+     * 
+     * @return UserPool 
+     */
+    public function getUserPool(): UserPool;
 }

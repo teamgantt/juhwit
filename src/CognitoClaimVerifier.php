@@ -5,36 +5,33 @@ namespace TeamGantt\Juhwit;
 use TeamGantt\Juhwit\Contracts\ClaimVerifierInterface;
 use TeamGantt\Juhwit\Models\Token;
 use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
+use TeamGantt\Juhwit\Models\UserPool;
 
 class CognitoClaimVerifier implements ClaimVerifierInterface
 {
     /**
-     * @var string[]
+     * @var UserPool
      */
-    protected $clientIds;
-
-    /**
-     * @var string
-     */
-    protected $poolId;
-
-    /**
-     * @var string
-     */
-    protected $region;
+    protected $pool;
 
     /**
      * CognitoClaimVerifier constructor.
      *
-     * @param string[] $clientId
-     * @param string $poolId
-     * @param string $region
+     * @param UserPool $pool
      */
-    public function __construct(array $clientIds, string $poolId, string $region)
+    public function __construct(UserPool $pool)
     {
-        $this->clientIds = $clientIds;
-        $this->poolId = $poolId;
-        $this->region = $region;
+        $this->pool = $pool;
+    }
+
+    /**
+     * {@inheritdoc}
+     * 
+     * @return UserPool 
+     */
+    public function getUserPool(): UserPool
+    {
+        return $this->pool;
     }
 
     /**
@@ -48,25 +45,10 @@ class CognitoClaimVerifier implements ClaimVerifierInterface
      */
     public function verify(Token $token): Token
     {
-        $aud = $token->getClaim('aud');
-        $iss = $token->getClaim('iss');
-        $tokenUse = $token->getClaim('token_use');
-
-        if (array_search($aud, $this->clientIds) === false) {
-            throw new InvalidClaimsException('Invalid aud claim');
+        if ($this->pool->hasValidClaims($token)) {
+            return $token;
         }
 
-        $poolId = $this->poolId;
-        $region = $this->region;
-
-        if ($iss !== "https://cognito-idp.$region.amazonaws.com/$poolId") {
-            throw new InvalidClaimsException('Invalid iss claim');
-        }
-
-        if ($tokenUse !== 'id') {
-            throw new InvalidClaimsException('Invalid token_use claim');
-        }
-
-        return $token;
+        throw new InvalidClaimsException($this->pool->getClaimsError($token));
     }
 }

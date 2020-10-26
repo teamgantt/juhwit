@@ -6,9 +6,12 @@
     "authors": [
         {
             "name": "Brian Scaturro",
-            "email": "scaturrob@gmail.com"
+            "email": "brian@teamgantt.com"
         }
     ],
+    "scripts": {
+        "test": "kahlan"
+    },
     "autoload": {
         "psr-4": {
             "TeamGantt\\Juhwit\\": ["src/"]
@@ -18,13 +21,6 @@
         "firebase/php-jwt": "^5.0",
         "codercat/jwk-to-pem": "^0.0.3",
         "php": "^7.0"
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "TeamGantt\\Juhwit\\JwtProvider"
-            ]
-        }
     },
     "require-dev": {
         "kahlan/kahlan": "^4.7"
