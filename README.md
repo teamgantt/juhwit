@@ -61,8 +61,27 @@ use TeamGantt\Juhwit\JwtDecoder;
 $decoder = new JwtDecoder($verifier, ['custom:user', 'custom:foo']);
 ```
 
+## Leveraging docker
+
+Juhwit is tested and developed against PHP 7.4.11. This project uses a combination of docker and [direnv](https://direnv.net/)
+to keep a consistent environment. To leverage direnv, `cd` into the juhwit project directory and run the following:
+
+```
+$ docker build -t juhwit:dev .
+$ direnv allow
+```
+
+This will put your current terminal into an environment that uses the dockerized php and composer binaries. You can use them like you normally would
+i.e:
+
+```
+$ php -v
+$ composer list
+```
+
+
 ## Running Tests
 
 ```
-$ vendor/bin/kahlan
+$ composer test
 ```
