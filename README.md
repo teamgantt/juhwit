@@ -57,6 +57,17 @@ $token = $decoder->decode($someTokenFromARequest, ['custom:user', 'token_use' =>
 
 Keep in mind that instances of `Token` will perform their own checks against required claims. See TeamGantt\Juhwit\Models\Token::getClaimsErrors() for more information.
 
+## Customizing token creation
+
+Juhwit provides a default implementations for id tokens and access tokens. After a jwt is verified against
+a public key, the claims and user provided `$requiredClaims` are passed to the `create` method of a `TokenFactoryInterface`.
+
+The default `CognitoTokenFactory` will return an `IdToken` or `AccessToken` depending on the token type provided. When constructing the `JwtDecoder`
+a custom `TokenFactoryInterface` can be passed to the constructor.
+
+This factory can be used to create custom tokens - the only requirement is that the `create` method returns a `TokenInterface`. Any `TokenException`s thrown
+by the factory will be caught and the token will be considered invalid.
+
 ## Leveraging docker
 
 Juhwit is tested and developed against PHP 7.4.11. This project uses a combination of docker and [direnv](https://direnv.net/)
