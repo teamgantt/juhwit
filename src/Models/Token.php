@@ -6,13 +6,6 @@ use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
 
 class Token
 {
-    const BASE_REQUIRED_CLAIMS = [
-        'aud',
-        'iss',
-        'token_use',
-        'email',
-    ];
-
     /**
      * @var array
      */
@@ -23,9 +16,9 @@ class Token
      *
      * @param array $claims
      */
-    public function __construct(array $claims, $extraRequiredClaims = [])
+    public function __construct(array $claims, array $requiredClaims = [])
     {
-        $this->invariant($claims, $extraRequiredClaims);
+        $this->invariant($claims, $requiredClaims);
         $this->claims = $claims;
     }
 
@@ -54,11 +47,9 @@ class Token
      *
      * @return void
      */
-    private function invariant(array $claims, array $extraRequiredClaims)
+    private function invariant(array $claims, array $requiredClaims)
     {
-        $requiredKeys = array_merge(self::BASE_REQUIRED_CLAIMS, $extraRequiredClaims);
-
-        foreach ($requiredKeys as $requiredKey) {
+        foreach ($requiredClaims as $requiredKey) {
             if (!isset($claims[$requiredKey])) {
                 throw new InvalidClaimsException("claim $requiredKey not found");
             }

@@ -26,18 +26,18 @@ class JwtDecoder implements DecoderInterface
     /**
      * @var array<string>
      */
-    protected $extraRequiredClaims;
+    protected $requiredClaims;
 
     /**
      * JwtDecoder constructor.
      *
      * @param ClaimVerifierInterface $verifier
-     * @param array<string> $extraRequiredClaims
+     * @param array<string> $requiredClaims
      */
-    public function __construct(ClaimVerifierInterface $verifier, array $extraRequiredClaims = [])
+    public function __construct(ClaimVerifierInterface $verifier, array $requiredClaims = [])
     {
         $this->verifier = $verifier;
-        $this->extraRequiredClaims = $extraRequiredClaims;
+        $this->requiredClaims = $requiredClaims;
     }
 
     /**
@@ -57,7 +57,7 @@ class JwtDecoder implements DecoderInterface
 
         $claims = $this->getVerifiedToken($kid, $token);
 
-        return $this->verifier->verify(new Token($claims, $this->extraRequiredClaims));
+        return $this->verifier->verify(new Token($claims, $this->requiredClaims));
     }
 
     /**

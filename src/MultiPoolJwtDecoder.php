@@ -19,15 +19,15 @@ class MultiPoolJwtDecoder implements DecoderInterface
     /**
      * @var string[]
      */
-    protected $extraRequiredClaims;
+    protected $requiredClaims;
 
     /**
      * 
      * @param ClaimVerifierInterface[] $verifiers 
-     * @param string[] $extraRequiredClaims
+     * @param string[] $requiredClaims
      * @return void 
      */
-    public function __construct(array $verifiers, array $extraRequiredClaims = [])
+    public function __construct(array $verifiers, array $requiredClaims = [])
     {
         foreach ($verifiers as $verifier) {
             if (! $verifier instanceof ClaimVerifierInterface) {
@@ -35,7 +35,7 @@ class MultiPoolJwtDecoder implements DecoderInterface
             }
         }
         $this->verifiers = $verifiers;
-        $this->extraRequiredClaims = $extraRequiredClaims;
+        $this->requiredClaims = $requiredClaims;
     }
 
     /**
@@ -49,7 +49,7 @@ class MultiPoolJwtDecoder implements DecoderInterface
     {
         $lastError = new UnknownException("An unknown error has occurred.");
         foreach ($this->verifiers as $verifier) {
-            $decoder = new JwtDecoder($verifier, $this->extraRequiredClaims);
+            $decoder = new JwtDecoder($verifier, $this->requiredClaims);
             try {
                 return $decoder->decode($token);
             } catch (Exception $e) {
