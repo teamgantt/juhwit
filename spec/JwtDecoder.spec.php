@@ -70,6 +70,17 @@ describe('JwtDecoder', function () {
             expect($token->getClaim('token_use'))->toBe('id');
         });
 
+        it('should support providing expected values as required claims', function () {
+            $token = $this->decoder->decode($this->jwt, ['custom:user_id' => '123']);
+        
+            $sut = function () {
+                $this->decoder->decode($this->jwt, ['custom:user_id' => '456']);
+            };
+
+            expect($token->getClaim('custom:user_id'))->toBe('123');
+            expect($sut)->toThrow(new InvalidClaimsException('unexpected value for claim custom:user_id'));
+        });
+
         it('should guarantee a jwt has certain claims', function () {
             $sut = function () {
                 $this->decoder->decode($this->jwt, ['foo']);

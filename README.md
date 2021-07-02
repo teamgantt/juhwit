@@ -35,8 +35,7 @@ $token = $decoder->decode($someTokenFromARequest);
 
 A token may be required to have certain claims.
 
-If you want to require claims, such as `custom:foo` or `custom:user`, you can require those by providing a second argument
-to the `JwtDecoder` instance.
+If you want to require claims, such as `custom:foo` or `custom:user`, you can require those by providing a second argument to the `JwtDecoder` instance.
 
 ```php
 <?php
@@ -44,6 +43,14 @@ to the `JwtDecoder` instance.
 use TeamGantt\Juhwit\JwtDecoder;
 
 $decoder = new JwtDecoder($verifier, ['custom:user', 'custom:foo']);
+```
+
+It is also possible to require claim values to be a specific value.
+
+```php
+use TeamGantt\Juhwit\JwtDecoder;
+
+$decoder = new JwtDecoder($verifier, ['custom:user', 'token_use' => 'id']);
 ```
 
 Keep in mind that instances of `Token` will perform their own checks against required claims. See TeamGantt\Juhwit\Models\Token::getClaimsErrors() for more information.

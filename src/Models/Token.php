@@ -71,9 +71,15 @@ abstract class Token
      */
     private function invariant(array $claims, array $requiredClaims)
     {
-        foreach ($requiredClaims as $requiredKey) {
-            if (!isset($claims[$requiredKey])) {
-                throw new InvalidClaimsException("claim $requiredKey not found");
+        foreach ($requiredClaims as $requiredKey => $requiredValue) {
+            $key = is_numeric($requiredKey) ? $requiredValue : $requiredKey;
+
+            if (!isset($claims[$key])) {
+                throw new InvalidClaimsException("claim $key not found");
+            }
+
+            if (! is_numeric($key) && $requiredValue !== $claims[$key]) {
+                throw new InvalidClaimsException("unexpected value for claim $key");
             }
         }
     }
