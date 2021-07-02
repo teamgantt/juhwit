@@ -43,14 +43,9 @@ $decoder = new MultiVerifierJwtDecoder([$verifier], $extraClaims = []);
 
 ### Requiring extra claims
 
-A token is required to have the following claims:
+A token may be required to have certain claims.
 
-* aud
-* iss
-* token_use
-* email
-
-If you want to require extra claims, such as `custom:foo` or `custom:user`, you can require those by providing a second argument
+If you want to require claims, such as `custom:foo` or `custom:user`, you can require those by providing a second argument
 to the `JwtDecoder` instance.
 
 ```php
@@ -60,6 +55,8 @@ use TeamGantt\Juhwit\JwtDecoder;
 
 $decoder = new JwtDecoder($verifier, ['custom:user', 'custom:foo']);
 ```
+
+Keep in mind that instances of `Token` will perform their own checks against required claims. See TeamGantt\Juhwit\Models\Token::getClaimsErrors() for more information.
 
 ## Leveraging docker
 
