@@ -102,9 +102,9 @@ describe('JwtDecoder', function () {
         });
 
         it('should throw an exception for a missing claim key', function () {
-            $decoderWithExtraRequiredKey = new JwtDecoder($this->verifier, ['custom:foo']);
+            $decoderWithExtraRequiredKey = new JwtDecoder($this->verifier);
             $sut = function () use ($decoderWithExtraRequiredKey) {
-                $decoderWithExtraRequiredKey->decode($this->jwt);
+                $decoderWithExtraRequiredKey->decode($this->jwt, ['custom:foo']);
             };
             expect($sut)->toThrow(new InvalidClaimsException("claim custom:foo not found"));
         });

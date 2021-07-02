@@ -38,16 +38,13 @@ class JwtDecoder implements DecoderInterface
      * JwtDecoder constructor.
      *
      * @param ClaimVerifierInterface $verifier
-     * @param array<string> $requiredClaims
      * @param TokenFactoryInterface $tokenFactory
      */
     public function __construct(
         ClaimVerifierInterface $verifier,
-        array $requiredClaims = [],
         TokenFactoryInterface $tokenFactory = null)
     {
         $this->verifier = $verifier;
-        $this->requiredClaims = $requiredClaims;
         $this->tokenFactory = $tokenFactory?? new CognitoTokenFactory();
     }
 
@@ -55,20 +52,19 @@ class JwtDecoder implements DecoderInterface
      * {@inheritdoc}
      *
      * @param string $token
-     * @param array<string> $
+     * @param array<string> $requiredClaims
      *
      * @throws TeamGantt\Api\Exceptions\Token\InvalidClaimsException
      *
      * @return array
      */
-    public function decode(string $token, array $extraRequiredClaims = []): TokenInterface
+    public function decode(string $token, array $requiredClaims = []): TokenInterface
     {
         list($header) = $this->validateStructure($token);
         $headerData = json_decode($header, true);
         $kid = $headerData['kid'];
 
         $claims = $this->getVerifiedToken($kid, $token);
-        $requiredClaims = array_merge($this->requiredClaims, $extraRequiredClaims);
         $token = $this->tokenFactory->create($claims, $requiredClaims);
 
         return $this->verifier->verify($token);
