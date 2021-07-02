@@ -6,7 +6,7 @@ use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
 use TeamGantt\Juhwit\Models\Token\AccessToken;
 use TeamGantt\Juhwit\Models\Token\IdToken;
 
-abstract class Token
+abstract class Token implements TokenInterface
 {
     /**
      * @var array
@@ -55,8 +55,6 @@ abstract class Token
                 throw new InvalidClaimsException('Invalid token_use claim');
         }
     }
-
-    abstract public function getClaimsError(UserPool $userPool);
 
     /**
      * Validate the claims the Token was constructed with. This is a semi opinionated
