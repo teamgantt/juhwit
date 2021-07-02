@@ -3,6 +3,7 @@
 namespace TeamGantt\Juhwit\Models;
 
 use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
+use TeamGantt\Juhwit\Models\Token\IdToken;
 
 abstract class Token
 {
@@ -33,6 +34,22 @@ abstract class Token
     {
         if (isset($this->claims[$name])) {
             return $this->claims[$name];
+        }
+    }
+
+    public static function create(array $claims, array $requiredClaims = [])
+    {
+        if (! isset($claims['token_use'])) {
+            throw new InvalidClaimsException('Missing token_use claim');
+        }
+
+        $tokenUse = $claims['token_use'];
+        
+        switch ($tokenUse) {
+            case 'id':
+                return new IdToken($claims, $requiredClaims);
+            default:
+                throw new InvalidClaimsException('Invalid token_use claim');
         }
     }
 

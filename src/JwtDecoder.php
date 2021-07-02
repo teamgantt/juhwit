@@ -58,8 +58,10 @@ class JwtDecoder implements DecoderInterface
         $kid = $headerData['kid'];
 
         $claims = $this->getVerifiedToken($kid, $token);
-
-        return $this->verifier->verify(new IdToken($claims, array_merge($this->requiredClaims, $extraRequiredClaims)));
+        $requiredClaims = array_merge($this->requiredClaims, $extraRequiredClaims);
+        $token = Token::create($claims, $requiredClaims);
+        
+        return $this->verifier->verify($token);
     }
 
     /**
