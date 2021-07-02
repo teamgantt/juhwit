@@ -42,7 +42,7 @@ describe('MultiPoolJwtDecoder', function () {
         it('should reject invalid structure', function () {
             $sut = function () {
                 $invalid = '11111.222222';
-                $this->decoder->decode($invalid, $this->validJwk);
+                $this->decoder->decode($invalid);
             };
             expect($sut)->toThrow(new InvalidStructureException());
         });
@@ -50,7 +50,7 @@ describe('MultiPoolJwtDecoder', function () {
         it('should reject a structure that contains non-base64 encoded items', function () {
             $sut = function () {
                 $invalid = 'as%iudfh9w=8uihf.asi%udfh9w=8uihf.as%iudfh9w=8uihf';
-                $this->decoder->decode($invalid, $this->validJwk);
+                $this->decoder->decode($invalid);
             };
             expect($sut)->toThrow(new InvalidStructureException());
         });
@@ -58,7 +58,7 @@ describe('MultiPoolJwtDecoder', function () {
         it('should reject an empty structure', function () {
             $sut = function () {
                 $invalid = '..';
-                $this->decoder->decode($invalid, $this->validJwk);
+                $this->decoder->decode($invalid);
             };
             expect($sut)->toThrow(new InvalidStructureException());
         });
@@ -114,7 +114,7 @@ describe('MultiPoolJwtDecoder', function () {
         it('should throw an exception for a missing claim key', function () {
             $decoderWithExtraRequiredKey = new MultiPoolJwtDecoder([$this->verifier], ['custom:foo']);
             $sut = function () use ($decoderWithExtraRequiredKey) {
-                $decoderWithExtraRequiredKey->decode($this->jwt, $this->validJwk);
+                $decoderWithExtraRequiredKey->decode($this->jwt);
             };
             expect($sut)->toThrow(new InvalidClaimsException("claim custom:foo not found"));
         });

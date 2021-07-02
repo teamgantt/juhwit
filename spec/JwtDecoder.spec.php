@@ -42,7 +42,7 @@ describe('JwtDecoder', function () {
         it('should reject invalid structure', function () {
             $sut = function () {
                 $invalid = '11111.222222';
-                $this->decoder->decode($invalid, $this->validJwk);
+                $this->decoder->decode($invalid);
             };
             expect($sut)->toThrow(new InvalidStructureException());
         });
@@ -50,7 +50,7 @@ describe('JwtDecoder', function () {
         it('should reject a structure that contains non-base64 encoded items', function () {
             $sut = function () {
                 $invalid = 'as%iudfh9w=8uihf.asi%udfh9w=8uihf.as%iudfh9w=8uihf';
-                $this->decoder->decode($invalid, $this->validJwk);
+                $this->decoder->decode($invalid);
             };
             expect($sut)->toThrow(new InvalidStructureException());
         });
@@ -58,7 +58,7 @@ describe('JwtDecoder', function () {
         it('should reject an empty structure', function () {
             $sut = function () {
                 $invalid = '..';
-                $this->decoder->decode($invalid, $this->validJwk);
+                $this->decoder->decode($invalid);
             };
             expect($sut)->toThrow(new InvalidStructureException());
         });
@@ -80,7 +80,7 @@ describe('JwtDecoder', function () {
         it('should throw an exception for expired tokens', function () {
             JWT::$leeway = 60;
             $sut = function () {
-                $this->decoder->decode($this->jwt, $this->validJwk);
+                $this->decoder->decode($this->jwt);
             };
             expect($sut)->toThrow(new ExpiredException("Expired token"));
         });
