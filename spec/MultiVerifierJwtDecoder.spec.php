@@ -3,6 +3,7 @@
 use TeamGantt\Juhwit\Exceptions\ExpiredException;
 use Firebase\JWT\JWT;
 use Kahlan\Plugin\Double;
+use TeamGantt\Juhwit\CognitoClaimVerifier;
 use TeamGantt\Juhwit\Contracts\ClaimVerifierInterface;
 use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
 use TeamGantt\Juhwit\Exceptions\InvalidJwkException;

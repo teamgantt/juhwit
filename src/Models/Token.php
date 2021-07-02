@@ -4,7 +4,7 @@ namespace TeamGantt\Juhwit\Models;
 
 use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
 
-class Token
+abstract class Token
 {
     /**
      * @var array
@@ -35,6 +35,8 @@ class Token
             return $this->claims[$name];
         }
     }
+
+    abstract public function getClaimsError(UserPool $userPool);
 
     /**
      * Validate the claims the Token was constructed with. This is a semi opinionated

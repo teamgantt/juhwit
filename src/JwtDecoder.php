@@ -8,6 +8,7 @@ use Firebase\JWT\JWT;
 use TeamGantt\Juhwit\Contracts\ClaimVerifierInterface;
 use TeamGantt\Juhwit\Contracts\DecoderInterface;
 use TeamGantt\Juhwit\Models\Token;
+use TeamGantt\Juhwit\Models\Token\IdToken;
 use TeamGantt\Juhwit\Exceptions\ExpiredException as JuhwitExpiredException;
 use TeamGantt\Juhwit\Exceptions\InvalidJwkException;
 use TeamGantt\Juhwit\Exceptions\InvalidStructureException;
@@ -58,7 +59,7 @@ class JwtDecoder implements DecoderInterface
 
         $claims = $this->getVerifiedToken($kid, $token);
 
-        return $this->verifier->verify(new Token($claims, array_merge($this->requiredClaims, $extraRequiredClaims)));
+        return $this->verifier->verify(new IdToken($claims, array_merge($this->requiredClaims, $extraRequiredClaims)));
     }
 
     /**
