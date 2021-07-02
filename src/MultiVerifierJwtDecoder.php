@@ -9,7 +9,7 @@ use TeamGantt\Juhwit\Contracts\DecoderInterface;
 use TeamGantt\Juhwit\Exceptions\UnknownException;
 use TeamGantt\Juhwit\Models\Token;
 
-class MultiPoolJwtDecoder implements DecoderInterface
+class MultiVerifierJwtDecoder implements DecoderInterface
 {
     /**
      * @var ClaimVerifierInterface[]

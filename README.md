@@ -31,14 +31,14 @@ $decoder = new JwtDecoder($verifier);
 $token = $decoder->decode($someTokenFromARequest);
 ```
 
-It is also possible to construct a `MultiPoolJwtDecoder` that can check a token's validity against multiple pools. Simply
+It is also possible to construct a `MultiVerifierJwtDecoder` that can check a token's validity against multiple verifiers. Simply
 pass an array of claims verifiers. 
 
 ```php
 <?php
 
 // ...
-$decoder = new MultiPoolJwtDecoder([$verifier], $extraClaims = []);
+$decoder = new MultiVerifierJwtDecoder([$verifier], $extraClaims = []);
 ```
 
 ### Requiring extra claims
