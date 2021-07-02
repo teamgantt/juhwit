@@ -69,6 +69,13 @@ describe('MultiPoolJwtDecoder', function () {
             expect($token->getClaim('token_use'))->toBe('id');
         });
 
+        it('should guarantee a jwt has certain claims', function () {
+            $sut = function () {
+                $this->decoder->decode($this->jwt, ['foo']);
+            };
+            expect($sut)->toThrow(new InvalidClaimsException("claim foo not found"));
+        });
+
         it('should accept valid claims if only one verifier succeeds', function () {
             $invalidClaimsVerifier = Double::instance(['implements' => ClaimVerifierInterface::class]);
         

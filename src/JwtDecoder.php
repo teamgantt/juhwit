@@ -44,12 +44,13 @@ class JwtDecoder implements DecoderInterface
      * {@inheritdoc}
      *
      * @param string $token
+     * @param array<string> $
      *
      * @throws TeamGantt\Api\Exceptions\Token\InvalidClaimsException
      *
      * @return array
      */
-    public function decode(string $token): Token
+    public function decode(string $token, array $extraRequiredClaims = []): Token
     {
         list($header) = $this->validateStructure($token);
         $headerData = json_decode($header, true);
@@ -57,7 +58,7 @@ class JwtDecoder implements DecoderInterface
 
         $claims = $this->getVerifiedToken($kid, $token);
 
-        return $this->verifier->verify(new Token($claims, $this->requiredClaims));
+        return $this->verifier->verify(new Token($claims, array_merge($this->requiredClaims, $extraRequiredClaims)));
     }
 
     /**

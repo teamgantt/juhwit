@@ -69,6 +69,13 @@ describe('JwtDecoder', function () {
             expect($token->getClaim('token_use'))->toBe('id');
         });
 
+        it('should guarantee a jwt has certain claims', function () {
+            $sut = function () {
+                $this->decoder->decode($this->jwt, ['foo']);
+            };
+            expect($sut)->toThrow(new InvalidClaimsException("claim foo not found"));
+        });
+
         it('should throw an exception for a missing claim key', function () {
             $decoderWithExtraRequiredKey = new JwtDecoder($this->verifier, ['custom:foo']);
             $sut = function () use ($decoderWithExtraRequiredKey) {

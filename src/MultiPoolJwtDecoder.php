@@ -45,13 +45,13 @@ class MultiPoolJwtDecoder implements DecoderInterface
      * @return Token 
      * @throws Exception 
      */
-    public function decode(string $token): Token
+    public function decode(string $token, array $extraRequiredClaims = []): Token
     {
         $lastError = new UnknownException("An unknown error has occurred.");
         foreach ($this->verifiers as $verifier) {
             $decoder = new JwtDecoder($verifier, $this->requiredClaims);
             try {
-                return $decoder->decode($token);
+                return $decoder->decode($token, $extraRequiredClaims);
             } catch (Exception $e) {
                 $lastError = $e;
             }

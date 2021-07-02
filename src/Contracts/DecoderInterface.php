@@ -12,9 +12,9 @@ interface DecoderInterface
      * with the result will be returned.
      *
      * @param string $token
-     * @param string $jwkFile
+     * @param array<string> $extraRequiredClaims
      *
      * @return Token
      */
-    public function decode(string $token): Token;
+    public function decode(string $token, array $extraRequiredClaims = []): Token;
 }
