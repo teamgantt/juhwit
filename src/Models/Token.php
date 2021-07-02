@@ -3,6 +3,7 @@
 namespace TeamGantt\Juhwit\Models;
 
 use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
+use TeamGantt\Juhwit\Models\Token\AccessToken;
 use TeamGantt\Juhwit\Models\Token\IdToken;
 
 abstract class Token
@@ -44,10 +45,12 @@ abstract class Token
         }
 
         $tokenUse = $claims['token_use'];
-        
+
         switch ($tokenUse) {
             case 'id':
                 return new IdToken($claims, $requiredClaims);
+            case 'access':
+                return new AccessToken($claims, $requiredClaims);
             default:
                 throw new InvalidClaimsException('Invalid token_use claim');
         }
