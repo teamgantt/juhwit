@@ -2,8 +2,6 @@
 
 namespace TeamGantt\Juhwit\Models;
 
-use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
-
 abstract class Token implements TokenInterface
 {
     /**
@@ -16,9 +14,8 @@ abstract class Token implements TokenInterface
      *
      * @param array $claims
      */
-    public function __construct(array $claims, array $requiredClaims = [])
+    public function __construct(array $claims)
     {
-        $this->invariant($claims, $requiredClaims);
         $this->claims = $claims;
     }
 
@@ -33,32 +30,6 @@ abstract class Token implements TokenInterface
     {
         if (isset($this->claims[$name])) {
             return $this->claims[$name];
-        }
-    }
-
-    /**
-     * Validate the claims the Token was constructed with. This is a semi opinionated
-     * list of required keys for a JWT from Cognito.
-     *
-     * @param array $claims
-     * @param array<string> $claims
-     *
-     * @throws InvalidClaimsException
-     *
-     * @return void
-     */
-    private function invariant(array $claims, array $requiredClaims)
-    {
-        foreach ($requiredClaims as $requiredKey => $requiredValue) {
-            $key = is_numeric($requiredKey) ? $requiredValue : $requiredKey;
-
-            if (!isset($claims[$key])) {
-                throw new InvalidClaimsException("claim $key not found");
-            }
-
-            if (! is_numeric($key) && $requiredValue !== $claims[$key]) {
-                throw new InvalidClaimsException("unexpected value for claim $key");
-            }
         }
     }
 }
