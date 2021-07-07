@@ -31,38 +31,64 @@ $decoder = new JwtDecoder($verifier);
 $token = $decoder->decode($someTokenFromARequest);
 ```
 
-It is also possible to construct a `MultiPoolJwtDecoder` that can check a token's validity against multiple pools. Simply
-pass an array of claims verifiers. 
-
-```php
-<?php
-
-// ...
-$decoder = new MultiPoolJwtDecoder([$verifier], $extraClaims = []);
-```
-
 ### Requiring extra claims
 
-A token is required to have the following claims:
+A token may be required to have certain claims.
 
-* aud
-* iss
-* token_use
-* email
-
-If you want to require extra claims, such as `custom:foo` or `custom:user`, you can require those by providing a second argument
-to the `JwtDecoder` instance.
+If you want to require claims, such as `custom:foo` or `custom:user`, you can require those by providing a second argument to the `decode` method.
 
 ```php
 <?php
 
 use TeamGantt\Juhwit\JwtDecoder;
 
-$decoder = new JwtDecoder($verifier, ['custom:user', 'custom:foo']);
+$decoder = new JwtDecoder($verifier);
+$token = $decoder->decode($someTokenFromARequest, ['custom:foo', 'custom:user']);
 ```
+
+It is also possible to require claim values to be a specific value.
+
+```php
+use TeamGantt\Juhwit\JwtDecoder;
+
+$decoder = new JwtDecoder($verifier);
+$token = $decoder->decode($someTokenFromARequest, ['custom:user', 'token_use' => 'id']);
+```
+
+Keep in mind that instances of `Token` will perform their own checks against required claims. See TeamGantt\Juhwit\Models\Token::getClaimsErrors() for more information.
+
+## Customizing token creation
+
+Juhwit provides a default implementations for id tokens and access tokens. After a jwt is verified against
+a public key, the claims and user provided `$requiredClaims` are passed to the `create` method of a `TokenFactoryInterface`.
+
+The default `CognitoTokenFactory` will return an `IdToken` or `AccessToken` depending on the token type provided. When constructing the `JwtDecoder`
+a custom `TokenFactoryInterface` can be passed to the constructor.
+
+This factory can be used to create custom tokens - the only requirement is that the `create` method returns a `TokenInterface`. Any `TokenException`s thrown
+by the factory will be caught and the token will be considered invalid.
+
+## Leveraging docker
+
+Juhwit is tested and developed against PHP 7.4.11. This project uses a combination of docker and [direnv](https://direnv.net/)
+to keep a consistent environment. To leverage direnv, `cd` into the juhwit project directory and run the following:
+
+```
+$ docker build -t juhwit:dev .
+$ direnv allow
+```
+
+This will put your current terminal into an environment that uses the dockerized php and composer binaries. You can use them like you normally would
+i.e:
+
+```
+$ php -v
+$ composer list
+```
+
 
 ## Running Tests
 
 ```
-$ vendor/bin/kahlan
+$ composer test
 ```

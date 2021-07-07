@@ -2,7 +2,7 @@
 
 namespace TeamGantt\Juhwit\Contracts;
 
-use TeamGantt\Juhwit\Models\Token;
+use TeamGantt\Juhwit\Models\TokenInterface;
 
 interface DecoderInterface
 {
@@ -12,9 +12,9 @@ interface DecoderInterface
      * with the result will be returned.
      *
      * @param string $token
-     * @param string $jwkFile
+     * @param array<string> $extraRequiredClaims
      *
-     * @return Token
+     * @return TokenInterface
      */
-    public function decode(string $token): Token;
+    public function decode(string $token, array $extraRequiredClaims = []): TokenInterface;
 }

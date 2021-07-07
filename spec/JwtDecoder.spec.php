@@ -3,6 +3,7 @@
 use TeamGantt\Juhwit\Exceptions\ExpiredException;
 use Firebase\JWT\JWT;
 use Kahlan\Plugin\Double;
+use TeamGantt\Juhwit\CognitoClaimVerifier;
 use TeamGantt\Juhwit\Contracts\ClaimVerifierInterface;
 use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
 use TeamGantt\Juhwit\Exceptions\InvalidJwkException;
@@ -42,7 +43,7 @@ describe('JwtDecoder', function () {
         it('should reject invalid structure', function () {
             $sut = function () {
                 $invalid = '11111.222222';
-                $this->decoder->decode($invalid, $this->validJwk);
+                $this->decoder->decode($invalid);
             };
             expect($sut)->toThrow(new InvalidStructureException());
         });
@@ -50,7 +51,7 @@ describe('JwtDecoder', function () {
         it('should reject a structure that contains non-base64 encoded items', function () {
             $sut = function () {
                 $invalid = 'as%iudfh9w=8uihf.asi%udfh9w=8uihf.as%iudfh9w=8uihf';
-                $this->decoder->decode($invalid, $this->validJwk);
+                $this->decoder->decode($invalid);
             };
             expect($sut)->toThrow(new InvalidStructureException());
         });
@@ -58,7 +59,7 @@ describe('JwtDecoder', function () {
         it('should reject an empty structure', function () {
             $sut = function () {
                 $invalid = '..';
-                $this->decoder->decode($invalid, $this->validJwk);
+                $this->decoder->decode($invalid);
             };
             expect($sut)->toThrow(new InvalidStructureException());
         });
@@ -69,10 +70,41 @@ describe('JwtDecoder', function () {
             expect($token->getClaim('token_use'))->toBe('id');
         });
 
+        it('should support providing expected values as required claims', function () {
+            $token = $this->decoder->decode($this->jwt, ['custom:user_id' => '123']);
+        
+            $sut = function () {
+                $this->decoder->decode($this->jwt, ['custom:user_id' => '456']);
+            };
+
+            expect($token->getClaim('custom:user_id'))->toBe('123');
+            expect($sut)->toThrow(new InvalidClaimsException('unexpected value for claim custom:user_id'));
+        });
+
+        it('should guarantee a jwt has certain claims', function () {
+            $sut = function () {
+                $this->decoder->decode($this->jwt, ['foo']);
+            };
+            expect($sut)->toThrow(new InvalidClaimsException("claim foo not found"));
+        });
+
+        it('should be able to decode an access token', function () {
+            $jwt = "eyJraWQiOiIzVXI5TDd0XC84NW83UlN6aWl4aEliQ2lCbkVDSmpGTFFcL3FhSnJRY0lPZm89IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIxM2NxMzg1bGJrYjRhcG5sZDZ2bnZoZ2kzNyIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiaHR0cHM6XC9cL2FwaS1sb2NhbC50ZWFtZ2FudHQuY29tXC90YXNrLmVkaXQiLCJhdXRoX3RpbWUiOjE2MjUyMzYyNDUsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy1lYXN0LTIuYW1hem9uYXdzLmNvbVwvdXMtZWFzdC0yX3JiVUo2Mk1pYiIsImV4cCI6MTYyNTMyMjY0NSwiaWF0IjoxNjI1MjM2MjQ1LCJ2ZXJzaW9uIjoyLCJqdGkiOiI2YTFkZmYyMC1iZTcxLTQxYjUtYjk3MC01Njg3MTAzYmY1M2UiLCJjbGllbnRfaWQiOiIxM2NxMzg1bGJrYjRhcG5sZDZ2bnZoZ2kzNyJ9.InU3IYNFgBlWRezlx2V6LBPTdX0chYYv6jBjTsV47fAma2E83PTw_QRcr-xFNtm7q_kuVri7b7-H3gGSIMoRXvsVqVV9l0AujZmfsZLDJtZNdipY6gxsofjswBVj883faiB17D8FqXosTL41NEfywG-pDb3tKT2q1qXR_Lfy2LokACoIU_vC8POqo9t5Spmb2sKfjDRmb3sMF0OruQBgT8hm9cCDn41F4MLmBB7f24g-1HuGl5LicO5JVGHBDi0_n_N_Q71vpDaPfYSWGcwoQvHot8vunIrfvXPzbWYSFelVm7Y3bsffgUVymbvSdyCjJKiqOUCrH_uFlLbPZdShrg";
+            $jwkPath = realpath(__DIR__ . DIRECTORY_SEPARATOR . 'jwk.client-credentials.json');
+            $jwkContents = file_get_contents($jwkPath);
+            $userPool = new UserPool('us-east-2_rbUJ62Mib', ['13cq385lbkb4apnld6vnvhgi37'], 'us-east-2', json_decode($jwkContents, true));
+            $verifier = new CognitoClaimVerifier($userPool);
+            $decoder = new JwtDecoder($verifier);
+
+            $token = $decoder->decode($jwt);
+
+            expect($token->getClaim('scope'))->toBe('https://api-local.teamgantt.com/task.edit');
+        });
+
         it('should throw an exception for a missing claim key', function () {
-            $decoderWithExtraRequiredKey = new JwtDecoder($this->verifier, ['custom:foo']);
+            $decoderWithExtraRequiredKey = new JwtDecoder($this->verifier);
             $sut = function () use ($decoderWithExtraRequiredKey) {
-                $decoderWithExtraRequiredKey->decode($this->jwt);
+                $decoderWithExtraRequiredKey->decode($this->jwt, ['custom:foo']);
             };
             expect($sut)->toThrow(new InvalidClaimsException("claim custom:foo not found"));
         });
@@ -80,7 +112,7 @@ describe('JwtDecoder', function () {
         it('should throw an exception for expired tokens', function () {
             JWT::$leeway = 60;
             $sut = function () {
-                $this->decoder->decode($this->jwt, $this->validJwk);
+                $this->decoder->decode($this->jwt);
             };
             expect($sut)->toThrow(new ExpiredException("Expired token"));
         });

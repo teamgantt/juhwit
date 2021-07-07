@@ -84,19 +84,7 @@ class UserPool
      */
     public function getClaimsError(Token $token)
     {
-        if (array_search($token->getClaim('aud'), $this->clientIds) === false) {
-            return 'Invalid aud claim';
-        }
-
-        if ($token->getClaim('iss') !== "https://cognito-idp.{$this->region}.amazonaws.com/{$this->id}") {
-            return 'Invalid iss claim';
-        }
-
-        if ($token->getClaim('token_use') !== 'id') {
-            return 'Invalid token_use claim';
-        }
-
-        return null;
+        return $token->getClaimsError($this);
     }
 
     /**

@@ -7,11 +7,12 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use TeamGantt\Juhwit\Contracts\ClaimVerifierInterface;
 use TeamGantt\Juhwit\Contracts\DecoderInterface;
-use TeamGantt\Juhwit\Models\Token;
+use TeamGantt\Juhwit\Contracts\TokenFactoryInterface;
 use TeamGantt\Juhwit\Exceptions\ExpiredException as JuhwitExpiredException;
 use TeamGantt\Juhwit\Exceptions\InvalidJwkException;
 use TeamGantt\Juhwit\Exceptions\InvalidStructureException;
 use TeamGantt\Juhwit\Exceptions\UnknownException;
+use TeamGantt\Juhwit\Models\TokenInterface;
 
 /**
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html
@@ -26,38 +27,47 @@ class JwtDecoder implements DecoderInterface
     /**
      * @var array<string>
      */
-    protected $extraRequiredClaims;
+    protected $requiredClaims;
+
+    /**
+     * @var TokenFactoryInterface
+     */
+    protected $tokenFactory;
 
     /**
      * JwtDecoder constructor.
      *
      * @param ClaimVerifierInterface $verifier
-     * @param array<string> $extraRequiredClaims
+     * @param TokenFactoryInterface $tokenFactory
      */
-    public function __construct(ClaimVerifierInterface $verifier, array $extraRequiredClaims = [])
+    public function __construct(
+        ClaimVerifierInterface $verifier,
+        TokenFactoryInterface $tokenFactory = null)
     {
         $this->verifier = $verifier;
-        $this->extraRequiredClaims = $extraRequiredClaims;
+        $this->tokenFactory = $tokenFactory?? new CognitoTokenFactory();
     }
 
     /**
      * {@inheritdoc}
      *
      * @param string $token
+     * @param array<string> $requiredClaims
      *
      * @throws TeamGantt\Api\Exceptions\Token\InvalidClaimsException
      *
      * @return array
      */
-    public function decode(string $token): Token
+    public function decode(string $token, array $requiredClaims = []): TokenInterface
     {
         list($header) = $this->validateStructure($token);
         $headerData = json_decode($header, true);
         $kid = $headerData['kid'];
 
         $claims = $this->getVerifiedToken($kid, $token);
+        $token = $this->tokenFactory->create($claims, $requiredClaims);
 
-        return $this->verifier->verify(new Token($claims, $this->extraRequiredClaims));
+        return $this->verifier->verify($token);
     }
 
     /**
