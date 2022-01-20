@@ -81,11 +81,22 @@ describe('JwtDecoder', function () {
             expect($sut)->toThrow(new InvalidClaimsException('unexpected value for claim custom:user_id'));
         });
 
-        it('should guarantee a jwt has certain claims', function () {
+        it('should throw an exception if an expected claim is not found', function () {
             $sut = function () {
                 $this->decoder->decode($this->jwt, ['foo']);
             };
             expect($sut)->toThrow(new InvalidClaimsException("claim foo not found"));
+        });
+
+        it('should not throw an exception if an expected claim is found', function () {
+            $token = $this->decoder->decode($this->jwt, ['custom:user_id' => '123']);
+        
+            $sut = function () {
+                $this->decoder->decode($this->jwt, ['custom:user_id']);
+            };
+
+            expect($token->getClaim('custom:user_id'))->toBe('123');
+            expect($sut)->not->toThrow();
         });
 
         it('should be able to decode an access token', function () {
