@@ -13,9 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The PHP versions Juhwit's consumers run (old-app: 8.2, api: 8.3).
-        # Kahlan 5.2 fails on 8.4+ (it uses the removed E_STRICT constant).
-        php: ['8.2', '8.3']
+        # Juhwit's consumers run 8.2 (old-app) and 8.3 (api); 8.4 and 8.5 are next.
+        php: ['8.2', '8.3', '8.4', '8.5']
 
     steps:
       - uses: actions/checkout@v4

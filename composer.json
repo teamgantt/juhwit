@@ -19,9 +19,9 @@
     },
     "require": {
         "firebase/php-jwt": "^6.0",
-        "php": ">=7.0"
+        "php": ">=7.1"
     },
     "require-dev": {
-        "kahlan/kahlan": "^5.2"
+        "kahlan/kahlan": "^6.1"
     }
 }

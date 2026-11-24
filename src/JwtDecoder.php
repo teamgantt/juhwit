@@ -42,7 +42,7 @@ class JwtDecoder implements DecoderInterface
      */
     public function __construct(
         ClaimVerifierInterface $verifier,
-        TokenFactoryInterface $tokenFactory = null)
+        ?TokenFactoryInterface $tokenFactory = null)
     {
         $this->verifier = $verifier;
         $this->tokenFactory = $tokenFactory?? new CognitoTokenFactory();
