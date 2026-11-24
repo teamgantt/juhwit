@@ -2,10 +2,9 @@
 
 namespace TeamGantt\Juhwit;
 
-use CoderCat\JWKToPEM\JWKConverter;
 use Firebase\JWT\ExpiredException;
+use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use TeamGantt\Juhwit\Contracts\ClaimVerifierInterface;
 use TeamGantt\Juhwit\Contracts\DecoderInterface;
 use TeamGantt\Juhwit\Contracts\TokenFactoryInterface;
@@ -113,9 +112,16 @@ class JwtDecoder implements DecoderInterface
             throw new InvalidJwkException("Could not locate key with ID $keyId");
         }
 
-        // Convert the JWK to a PEM for use with JWT::decode
-        $converter = new JWKConverter();
-        $pem = new Key($converter->toPEM($key), $key['alg']);
+        // Convert the JWK to a key for use with JWT::decode
+        try {
+            $pem = JWK::parseKey($key, $key['alg'] ?? null);
+        } catch (\Exception $e) {
+            throw new InvalidJwkException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        if ($pem === null) {
+            throw new InvalidJwkException("Could not parse key with ID $keyId");
+        }
 
         // Return the decoded token
         try {

@@ -8,6 +8,7 @@ use TeamGantt\Juhwit\Contracts\ClaimVerifierInterface;
 use TeamGantt\Juhwit\Exceptions\InvalidClaimsException;
 use TeamGantt\Juhwit\Exceptions\InvalidJwkException;
 use TeamGantt\Juhwit\Exceptions\InvalidStructureException;
+use TeamGantt\Juhwit\Exceptions\UnknownException;
 use TeamGantt\Juhwit\JwtDecoder;
 use TeamGantt\Juhwit\Models\UserPool;
 
@@ -68,6 +69,26 @@ describe('JwtDecoder', function () {
             $token = $this->decoder->decode($this->jwt);
             expect($token->getClaim('custom:user_id'))->toBe('123');
             expect($token->getClaim('token_use'))->toBe('id');
+        });
+
+        it('should reject a jwt whose signature does not match', function () {
+            $sut = function () {
+                list($header, $payload, $signature) = explode('.', $this->jwt);
+                $tampered = $header . '.' . $payload . '.' . strrev($signature);
+                $this->decoder->decode($tampered);
+            };
+            expect($sut)->toThrow(new UnknownException('Signature verification failed'));
+        });
+
+        it('should reject a jwt whose payload was altered', function () {
+            $sut = function () {
+                list($header, $payload, $signature) = explode('.', $this->jwt);
+                $claims = json_decode(JWT::urlsafeB64Decode($payload), true);
+                $claims['custom:user_id'] = '456';
+                $altered = $header . '.' . JWT::urlsafeB64Encode(json_encode($claims)) . '.' . $signature;
+                $this->decoder->decode($altered);
+            };
+            expect($sut)->toThrow(new UnknownException('Signature verification failed'));
         });
 
         it('should support providing expected values as required claims', function () {
