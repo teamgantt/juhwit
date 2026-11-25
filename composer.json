@@ -19,10 +19,9 @@
     },
     "require": {
         "firebase/php-jwt": "^6.0",
-        "codercat/jwk-to-pem": "^0.0.3",
-        "php": ">=7.0"
+        "php": ">=7.1"
     },
     "require-dev": {
-        "kahlan/kahlan": "^4.7"
+        "kahlan/kahlan": "^6.1"
     }
 }

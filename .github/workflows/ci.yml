@@ -1,28 +1,37 @@
 name: CI
 
-on: 
-  - push
-  - pull_request
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v1
+    strategy:
+      fail-fast: false
+      matrix:
+        # Juhwit's consumers run 8.2 (old-app) and 8.3 (api); 8.4 and 8.5 are next.
+        php: ['8.2', '8.3', '8.4', '8.5']
 
-      - name: Cache PHP dependencies
-        uses: actions/cache@v1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
         with:
           path: vendor
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
 
       - name: Install dependencies
-        uses: MilesChou/composer-action@master
-        with:
-          args: install
+        run: composer install --no-interaction --no-progress
 
       - name: Run tests
-        uses: MilesChou/composer-action@master
-        with:
-          args: test
+        run: composer test
